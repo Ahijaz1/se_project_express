@@ -25,14 +25,12 @@ const createItem = async (req, res) => {
 
   try {
     const item = await ClothingItem.create({ name, weather, imageUrl });
-    return res.status(201).json(item); // added return
+    res.status(201).json(item);
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).json({ message: err.message });
     }
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 

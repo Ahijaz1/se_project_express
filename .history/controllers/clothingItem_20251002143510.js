@@ -32,7 +32,7 @@ const createItem = async (req, res) => {
     }
     return res
       .status(500)
-      .json({ message: "Server error", error: err.message });
+      .json({ message: "Server error", error: err.message }); // added return
   }
 };
 
