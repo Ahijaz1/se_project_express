@@ -1,0 +1,49 @@
+const ClothingItem = require("../models/clothingItem");
+
+// POST /items
+const createItem = (req, res) => {
+  const { name, weather, imageUrl } = req.body;
+
+  ClothingItem.create({ name, weather, imageUrl })
+    .then((item) => res.status(201).send({ data: item }))
+    .catch((err) =>
+      res
+        .status(500)
+        .send({ message: "Error creating clothing item", error: err.message })
+    );
+};
+
+// GET /items
+const getItems = (req, res) => {
+  ClothingItem.find()
+    .then((items) => res.status(200).send({ data: items }))
+    .catch((err) =>
+      res
+        .status(500)
+        .send({ message: "Error getting clothing items", error: err.message })
+    );
+};
+
+// PUT /items/:itemId
+const updateItem = (req, res) => {
+  const { itemId } = req.params;
+  const { name, weather, imageUrl } = req.body;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { name, weather, imageUrl },
+    { new: true } // return the updated document
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((err) => {
+      if (err.kind === "ObjectId") {
+        return res.status(404).send({ message: "Item not found" });
+      }
+      res
+        .status(500)
+        .send({ message: "Error updating clothing item", error: err.message });
+    });
+};
+
+module.exports = { createItem, getItems, updateItem };
