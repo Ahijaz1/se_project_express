@@ -101,7 +101,7 @@ const deleteItem = async (req, res) => {
 // PUT /items/:itemId/likes
 const likeItem = async (req, res) => {
   const { itemId } = req.params;
-  const { _id: userId = "68ded77a3c33c6d7231b39a5" } = req.user || {};
+  const userId = req.user?._id || "68ded77a3c33c6d7231b39a5"; // fallback for testing
 
   if (!isValidId(itemId)) {
     return res.status(400).json({ message: "Invalid item ID" });
@@ -130,7 +130,7 @@ const likeItem = async (req, res) => {
 // DELETE /items/:itemId/likes
 const dislikeItem = async (req, res) => {
   const { itemId } = req.params;
-  const { _id: userId = "68ded77a3c33c6d7231b39a5" } = req.user || {};
+  const userId = req.user?._id || "68ded77a3c33c6d7231b39a5"; // fallback for testing
 
   if (!isValidId(itemId)) {
     return res.status(400).json({ message: "Invalid item ID" });

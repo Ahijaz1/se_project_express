@@ -8,15 +8,13 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    return res.status(200).json(users);
+    res.status(200).json(users);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
-// GET /users/:id
+// GET /user by ID
 const getUserById = async (req, res) => {
   const { id } = req.params;
 
@@ -26,20 +24,17 @@ const getUserById = async (req, res) => {
 
   try {
     const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
     return res.status(200).json(user);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 // POST /users
 const createUser = async (req, res) => {
-  const { name, avatar } = req.body || {};
+  const body = req.body || {};
+  const { name, avatar } = body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({
@@ -62,14 +57,12 @@ const createUser = async (req, res) => {
 
   try {
     const user = await User.create({ name, avatar });
-    return res.status(201).json(user);
+    res.status(201).json(user);
   } catch (err) {
     if (err.name === "ValidationError") {
       return res.status(400).json({ message: err.message });
     }
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 

@@ -22,6 +22,6 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    "no-underscore-dangle": "off",
+    "no-underscore-dangle": "off", // 👈 This ignores the _id warning
   },
 };
