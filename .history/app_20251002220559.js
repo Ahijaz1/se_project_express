@@ -15,9 +15,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// ⚡ Add test user middleware for endpoints tests
 app.use((req, res, next) => {
   req.user = {
-    _id: "5d8b8592978f8bd833ca8133", // example user ID
+    _id: "5d8b8592978f8bd833ca8133", // required by test_endpoints
   };
   next();
 });
