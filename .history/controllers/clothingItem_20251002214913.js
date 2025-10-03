@@ -6,7 +6,7 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // POST /items
 const createItem = async (req, res) => {
-  const { name, weather, imageUrl } = req.body || {};
+  const { name, weather, imageUrl } = req.body;
 
   if (
     !name ||
@@ -16,11 +16,9 @@ const createItem = async (req, res) => {
   ) {
     return res.status(400).json({ message: "Name must be 2-30 characters" });
   }
-
   if (!weather || typeof weather !== "string") {
     return res.status(400).json({ message: "Weather is required" });
   }
-
   if (!imageUrl || typeof imageUrl !== "string") {
     return res.status(400).json({ message: "Image URL is required" });
   }
@@ -105,8 +103,11 @@ const likeItem = async (req, res) => {
   const { itemId } = req.params;
   const { _id: userId = "68ded77a3c33c6d7231b39a5" } = req.user || {};
 
-  if (!isValidId(itemId) || !isValidId(userId)) {
-    return res.status(400).json({ message: "Invalid item or user ID" });
+  if (!isValidId(itemId)) {
+    return res.status(400).json({ message: "Invalid item ID" });
+  }
+  if (!isValidId(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {
@@ -131,8 +132,11 @@ const dislikeItem = async (req, res) => {
   const { itemId } = req.params;
   const { _id: userId = "68ded77a3c33c6d7231b39a5" } = req.user || {};
 
-  if (!isValidId(itemId) || !isValidId(userId)) {
-    return res.status(400).json({ message: "Invalid item or user ID" });
+  if (!isValidId(itemId)) {
+    return res.status(400).json({ message: "Invalid item ID" });
+  }
+  if (!isValidId(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
   }
 
   try {

@@ -1,3 +1,5 @@
+const _id = "";
+
 module.exports = {
   env: {
     es2021: true,
@@ -22,6 +24,5 @@ module.exports = {
   rules: {
     "no-underscore-dangle": "off",
     "no-console": "off",
-    "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };
