@@ -16,17 +16,3 @@ node_modules
 
 # Environment variables
 .env
-
-# Coverage reports (if using Jest or similar)
-coverage/
-
-# PID files
-*.pid
-*.seed
-*.pid.lock
-
-# Optional ESLint cache
-.eslintcache
-
-# Output of 'npm pack'
-*.tgz

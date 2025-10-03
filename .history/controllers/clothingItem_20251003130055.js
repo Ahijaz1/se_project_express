@@ -7,7 +7,7 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 // POST /items
 const createItem = async (req, res) => {
   const { name, weather, imageUrl } = req.body || {};
-  const owner = req.user?._id;
+  const owner = req.user?._id; // make sure the owner comes from auth middleware
 
   if (
     !name ||
@@ -35,7 +35,7 @@ const createItem = async (req, res) => {
       name,
       weather,
       imageUrl,
-      owner,
+      owner, // ✅ attach user as the owner
     });
     return res.status(201).json(item);
   } catch (err) {
@@ -47,6 +47,7 @@ const createItem = async (req, res) => {
       .json({ message: "Server error", error: err.message });
   }
 };
+
 
 // GET /items
 const getItems = async (req, res) => {

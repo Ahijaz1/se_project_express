@@ -35,7 +35,7 @@ const createItem = async (req, res) => {
       name,
       weather,
       imageUrl,
-      owner,
+      owner, // ✅ keep ownership tracking
     });
     return res.status(201).json(item);
   } catch (err) {
@@ -54,35 +54,6 @@ const getItems = async (req, res) => {
     const items = await ClothingItem.find();
     return res.status(200).json(items);
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
-  }
-};
-
-// PUT /items/:itemId
-const updateItem = async (req, res) => {
-  const { itemId } = req.params;
-  const { name, weather, imageUrl } = req.body;
-
-  if (!isValidId(itemId)) {
-    return res.status(400).json({ message: "Invalid item ID" });
-  }
-
-  try {
-    const item = await ClothingItem.findByIdAndUpdate(
-      itemId,
-      { name, weather, imageUrl },
-      { new: true, runValidators: true }
-    );
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
-    }
-    return res.status(200).json(item);
-  } catch (err) {
-    if (err.name === "ValidationError") {
-      return res.status(400).json({ message: err.message });
-    }
     return res
       .status(500)
       .json({ message: "Server error", error: err.message });
@@ -165,7 +136,6 @@ const dislikeItem = async (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

@@ -7,7 +7,7 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 // POST /items
 const createItem = async (req, res) => {
   const { name, weather, imageUrl } = req.body || {};
-  const owner = req.user?._id;
+  const owner = req.user?._id; // make sure the owner comes from auth middleware
 
   if (
     !name ||
