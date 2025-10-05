@@ -10,19 +10,13 @@ const {
 // Helper to validate ObjectId
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-// Generic server error message (use for unexpected/internal errors)
-const GENERIC_SERVER_ERROR = "An error has occurred on the server.";
-
 // GET /users
 const getUsers = async (req, res, next) => {
   try {
     const users = await User.find();
-    return res.status(200).json(users);
+    res.status(200).json(users);
   } catch (err) {
-    console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    next(err);
   }
 };
 
@@ -30,18 +24,14 @@ const getUsers = async (req, res, next) => {
 const getUserById = async (req, res, next) => {
   const { id } = req.params;
 
-  if (!isValidId(id))
-    return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
+  if (!isValidId(id)) return next(new BadRequestError("Invalid user ID"));
 
   try {
     const user = await User.findById(id);
-    if (!user) return res.status(NOT_FOUND).json({ message: "User not found" });
-    return res.status(200).json(user);
+    if (!user) throw new NotFoundError("User not found");
+    res.status(200).json(user);
   } catch (err) {
-    console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    next(err);
   }
 };
 
@@ -50,9 +40,11 @@ const createUser = async (req, res, next) => {
   const { name, avatar } = req.body || {};
 
   if (!req.body || Object.keys(req.body).length === 0) {
-    return res.status(BAD_REQUEST).json({
-      message: "Request body is required (set Content-Type: application/json)",
-    });
+    return next(
+      new BadRequestError(
+        "Request body is required (set Content-Type: application/json)"
+      )
+    );
   }
 
   if (
@@ -61,23 +53,21 @@ const createUser = async (req, res, next) => {
     name.length < 2 ||
     name.length > 30
   ) {
-    return res
-      .status(BAD_REQUEST)
-      .json({ message: "Name must be 2-30 characters" });
+    return next(new BadRequestError("Name must be 2-30 characters"));
   }
 
   if (!avatar || typeof avatar !== "string") {
-    return res.status(BAD_REQUEST).json({ message: "Avatar URL is required" });
+    return next(new BadRequestError("Avatar URL is required"));
   }
 
   try {
     const user = await User.create({ name, avatar });
-    return res.status(201).json(user);
+    res.status(201).json(user);
   } catch (err) {
-    console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    if (err.name === "ValidationError") {
+      return next(new BadRequestError(err.message));
+    }
+    next(err);
   }
 };
 

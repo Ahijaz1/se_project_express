@@ -1,28 +1,20 @@
 const mongoose = require("mongoose");
 const User = require("../models/user");
 const { BadRequestError, NotFoundError } = require("../utils/errors");
-const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/constants");
 
 // Helper to validate ObjectId
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-// Generic server error message (use for unexpected/internal errors)
 const GENERIC_SERVER_ERROR = "An error has occurred on the server.";
 
 // GET /users
 const getUsers = async (req, res, next) => {
   try {
     const users = await User.find();
-    return res.status(200).json(users);
+    res.status(200).json(users);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(500).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -31,17 +23,15 @@ const getUserById = async (req, res, next) => {
   const { id } = req.params;
 
   if (!isValidId(id))
-    return res.status(BAD_REQUEST).json({ message: "Invalid user ID" });
+    return res.status(400).json({ message: "Invalid user ID" });
 
   try {
     const user = await User.findById(id);
-    if (!user) return res.status(NOT_FOUND).json({ message: "User not found" });
-    return res.status(200).json(user);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(500).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -50,7 +40,7 @@ const createUser = async (req, res, next) => {
   const { name, avatar } = req.body || {};
 
   if (!req.body || Object.keys(req.body).length === 0) {
-    return res.status(BAD_REQUEST).json({
+    return res.status(400).json({
       message: "Request body is required (set Content-Type: application/json)",
     });
   }
@@ -61,23 +51,19 @@ const createUser = async (req, res, next) => {
     name.length < 2 ||
     name.length > 30
   ) {
-    return res
-      .status(BAD_REQUEST)
-      .json({ message: "Name must be 2-30 characters" });
+    return res.status(400).json({ message: "Name must be 2-30 characters" });
   }
 
   if (!avatar || typeof avatar !== "string") {
-    return res.status(BAD_REQUEST).json({ message: "Avatar URL is required" });
+    return res.status(400).json({ message: "Avatar URL is required" });
   }
 
   try {
     const user = await User.create({ name, avatar });
-    return res.status(201).json(user);
+    res.status(201).json(user);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(500).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 

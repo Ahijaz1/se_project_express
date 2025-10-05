@@ -12,11 +12,8 @@ const {
   INTERNAL_SERVER_ERROR,
 } = require("../utils/constants");
 
-// Generic server error message (use for unexpected/internal errors)
-const GENERIC_SERVER_ERROR = "An error has occurred on the server.";
-
-// Helper to validate ObjectId
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
+const GENERIC_SERVER_ERROR = "An error has occurred on the server.";
 
 // POST /items
 const createItem = async (req, res, next) => {
@@ -47,12 +44,10 @@ const createItem = async (req, res, next) => {
 
   try {
     const item = await ClothingItem.create({ name, weather, imageUrl, owner });
-    return res.status(201).json(item);
+    res.status(201).json(item);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -60,12 +55,10 @@ const createItem = async (req, res, next) => {
 const getItems = async (req, res) => {
   try {
     const items = await ClothingItem.find();
-    return res.status(200).json(items);
+    res.status(200).json(items);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -74,9 +67,8 @@ const updateItem = async (req, res, next) => {
   const { itemId } = req.params;
   const { name, weather, imageUrl } = req.body;
 
-  if (!isValidId(itemId)) {
+  if (!isValidId(itemId))
     return next(new BadRequestError("Invalid item ID", BAD_REQUEST));
-  }
 
   try {
     const item = await ClothingItem.findByIdAndUpdate(
@@ -84,36 +76,27 @@ const updateItem = async (req, res, next) => {
       { name, weather, imageUrl },
       { new: true, runValidators: true }
     );
-    if (!item) {
-      throw new NotFoundError("Item not found", NOT_FOUND);
-    }
-    return res.status(200).json(item);
+    if (!item) throw new NotFoundError("Item not found", NOT_FOUND);
+    res.status(200).json(item);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
 // DELETE /items/:itemId
 const deleteItem = async (req, res, next) => {
   const { itemId } = req.params;
-  if (!isValidId(itemId)) {
+  if (!isValidId(itemId))
     return next(new BadRequestError("Invalid item ID", BAD_REQUEST));
-  }
 
   try {
     const item = await ClothingItem.findByIdAndDelete(itemId);
-    if (!item) {
-      throw new NotFoundError("Item not found", NOT_FOUND);
-    }
-    return res.status(200).json({ message: "Clothing item deleted" });
+    if (!item) throw new NotFoundError("Item not found", NOT_FOUND);
+    res.status(200).json({ message: "Clothing item deleted" });
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -132,15 +115,11 @@ const likeItem = async (req, res, next) => {
       { $addToSet: { likes: userId } },
       { new: true }
     );
-    if (!item) {
-      throw new NotFoundError("Item not found", NOT_FOUND);
-    }
-    return res.status(200).json(item);
+    if (!item) throw new NotFoundError("Item not found", NOT_FOUND);
+    res.status(200).json(item);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
@@ -159,15 +138,11 @@ const dislikeItem = async (req, res, next) => {
       { $pull: { likes: userId } },
       { new: true }
     );
-    if (!item) {
-      throw new NotFoundError("Item not found", NOT_FOUND);
-    }
-    return res.status(200).json(item);
+    if (!item) throw new NotFoundError("Item not found", NOT_FOUND);
+    res.status(200).json(item);
   } catch (err) {
     console.error(err);
-    return res
-      .status(INTERNAL_SERVER_ERROR)
-      .json({ message: GENERIC_SERVER_ERROR });
+    res.status(INTERNAL_SERVER_ERROR).json({ message: GENERIC_SERVER_ERROR });
   }
 };
 
