@@ -12,9 +12,7 @@ const { NOT_FOUND, ERROR_MESSAGES } = require("../utils/constants");
 router.use((req, res) => {
   res
     .status(NOT_FOUND)
-    .send({
-      message: `${ERROR_MESSAGES.NOT_FOUND} for ${req.method} ${req.originalUrl}`,
-    });
+    .send({ message: `${ERROR_MESSAGES.NOT_FOUND} for ${req.method} ${req.originalUrl}` });
 });
 
 module.exports = router;

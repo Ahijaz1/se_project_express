@@ -24,8 +24,6 @@ module.exports = (req, res, next) => {
     req.user = payload;
     return next();
   } catch (err) {
-    return res
-      .status(UNAUTHORIZED)
-      .json({ message: "Invalid or expired token" });
+    return res.status(UNAUTHORIZED).json({ message: "Invalid or expired token" });
   }
 };

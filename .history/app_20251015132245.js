@@ -34,13 +34,11 @@ app.use((req, res, next) => {
 app.post("/signup", createUser);
 app.post("/signin", login);
 
-// mount main router (some routes inside it might be public)
-app.use("/", mainRouter);
-
-// ---------- Protected Routes (apply auth afterwards) ---------- //
+// ---------- Protected Routes ---------- //
 app.use(auth);
 app.get("/users/me", getCurrentUser);
 app.patch("/users/me", updateUserInfo);
+app.use("/", mainRouter);
 
 // ---------- MongoDB Connection ---------- //
 mongoose
