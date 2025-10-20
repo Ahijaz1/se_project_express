@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre("save", async function hashPassword(next) {
+async function hashPassword(next) {
   if (!this.isModified("password")) return next();
   try {
     const hash = await bcrypt.hash(this.password, 10);
@@ -47,10 +47,12 @@ userSchema.pre("save", async function hashPassword(next) {
   } catch (err) {
     return next(err);
   }
-});
+}
+
+userSchema.pre("save", hashPassword);
 
 // Static method for credential checking
-userSchema.statics.findUserByCredentials = async function (email, password) {
+async function findUserByCredentials(email, password) {
   // find the user by email (include password explicitly)
   const user = await this.findOne({ email }).select("+password");
   if (!user) {
@@ -64,6 +66,8 @@ userSchema.statics.findUserByCredentials = async function (email, password) {
   }
 
   return user; // successful login
-};
+}
+
+userSchema.statics.findUserByCredentials = findUserByCredentials;
 
 module.exports = mongoose.model("User", userSchema);

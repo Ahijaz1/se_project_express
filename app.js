@@ -39,8 +39,6 @@ app.use("/", mainRouter);
 
 // ---------- Protected Routes (apply auth afterwards) ---------- //
 app.use(auth);
-app.get("/users/me", getCurrentUser);
-app.patch("/users/me", updateUserInfo);
 
 // ---------- MongoDB Connection ---------- //
 mongoose
