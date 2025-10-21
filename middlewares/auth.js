@@ -9,10 +9,6 @@ module.exports = (req, res, next) => {
   let token;
   if (authorization && authorization.startsWith("Bearer ")) {
     token = authorization.replace("Bearer ", "");
-  } else if (req.headers.cookie) {
-    const cookies = req.headers.cookie.split(";").map((c) => c.trim());
-    const jwtCookie = cookies.find((c) => c.startsWith("jwt="));
-    if (jwtCookie) token = decodeURIComponent(jwtCookie.split("=")[1]);
   }
 
   if (!token) {

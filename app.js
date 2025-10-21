@@ -5,15 +5,9 @@ const cors = require("cors");
 
 // Import routers & controllers
 const mainRouter = require("./routes/index");
-const {
-  createUser,
-  login,
-  getCurrentUser,
-  updateUserInfo,
-} = require("./controllers/users");
+const { createUser, login } = require("./controllers/users");
 
-// Import auth middleware
-const auth = require("./middlewares/auth");
+// auth middleware is applied at router-level where needed
 
 // Import config
 const { PORT, MONGO_URI } = require("./utils/config");
@@ -36,9 +30,6 @@ app.post("/signin", login);
 
 // mount main router (some routes inside it might be public)
 app.use("/", mainRouter);
-
-// ---------- Protected Routes (apply auth afterwards) ---------- //
-app.use(auth);
 
 // ---------- MongoDB Connection ---------- //
 mongoose
