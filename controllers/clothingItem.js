@@ -40,7 +40,14 @@ const createItem = async (req, res, next) => {
       imageUrl,
       owner,
     });
-    res.status(201).json(newItem);
+
+    // Populate the owner field to match the format expected by frontend
+    const populatedItem = await ClothingItem.findById(newItem._id).populate(
+      "owner",
+      "_id email name"
+    );
+
+    res.status(201).json(populatedItem);
   } catch (err) {
     if (err.name === "ValidationError") {
       next(new BadRequestError("Invalid data provided when creating item"));

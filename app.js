@@ -34,8 +34,14 @@ app.use("/", mainRouter);
 // ---------- MongoDB Connection ---------- //
 mongoose
   .connect(MONGO_URI)
-  .then(() => debug("Connected to MongoDB"))
-  .catch((err) => debug("MongoDB connection error:", err));
+  .then(() => {
+    console.log("Connected to MongoDB");
+    debug("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.log("MongoDB connection error:", err);
+    debug("MongoDB connection error:", err);
+  });
 
 // ---------- Error Handling Middleware ---------- //
 app.use((err, req, res, _next) => {
@@ -47,6 +53,7 @@ app.use((err, req, res, _next) => {
 
 // ---------- Start Server ---------- //
 app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
   debug(`Server is running on port ${PORT}`);
 });
 

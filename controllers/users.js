@@ -33,11 +33,26 @@ module.exports.createUser = async (req, res, next) => {
     // Create user (password will be hashed by the model pre-save hook)
     const user = await User.create({ name, avatar, email, password });
 
-    // Remove password from response
-    const userResponse = user.toObject();
-    delete userResponse.password;
+    // Generate JWT token immediately after registration
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.status(201).send(userResponse);
+    // Set token as HttpOnly cookie
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send token AND user data to eliminate need for login after registration
+    res.status(201).send({
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      },
+    });
   } catch (err) {
     if (err.name === "ValidationError") {
       next(new BadRequestError("Invalid data"));
@@ -76,8 +91,16 @@ module.exports.login = async (req, res, next) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Send token as JSON response as well
-    res.status(200).send({ token });
+    // Send token AND user data to avoid second API call
+    res.status(200).send({
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      },
+    });
   } catch (err) {
     next(err);
   }
