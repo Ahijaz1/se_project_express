@@ -6,6 +6,7 @@ const cors = require("cors");
 // Import routers & controllers
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
+const errorHandler = require("./middlewares/error-handler");
 
 // auth middleware is applied at router-level where needed
 
@@ -35,25 +36,18 @@ app.use("/", mainRouter);
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("Connected to MongoDB");
     debug("Connected to MongoDB");
   })
   .catch((err) => {
-    console.log("MongoDB connection error:", err);
+    console.error("MongoDB connection error:", err);
     debug("MongoDB connection error:", err);
   });
 
 // ---------- Error Handling Middleware ---------- //
-app.use((err, req, res, _next) => {
-  console.error(err);
-  const status = err.statusCode || 500;
-  const message = err.message || "An error has occurred on the server.";
-  res.status(status).json({ message });
-});
+app.use(errorHandler);
 
 // ---------- Start Server ---------- //
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
   debug(`Server is running on port ${PORT}`);
 });
 
