@@ -2,11 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const debug = require("debug")("app:server");
 const cors = require("cors");
+const { errors } = require("celebrate");
 
 // Import routers & controllers
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 // auth middleware is applied at router-level where needed
 
@@ -20,10 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // Request logging
-app.use((req, res, next) => {
-  debug(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
-  next();
-});
+app.use(requestLogger);
 
 // ---------- Public Routes ---------- //
 app.post("/signup", createUser);
@@ -44,6 +43,13 @@ mongoose
   });
 
 // ---------- Error Handling Middleware ---------- //
+// error logger
+app.use(errorLogger);
+
+// celebrate error handler
+app.use(errors());
+
+// our centralized handler
 app.use(errorHandler);
 
 // ---------- Start Server ---------- //
