@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const debug = require("debug")("app:server");
 const cors = require("cors");
 const { errors } = require("celebrate");
+require("dotenv").config();
 
 // Import routers & controllers
 const mainRouter = require("./routes/index");
