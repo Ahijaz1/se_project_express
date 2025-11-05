@@ -11,8 +11,6 @@ const { createUser, login } = require("./controllers/users");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-// auth middleware is applied at router-level where needed
-
 // Import config
 const { PORT, MONGO_URI } = require("./utils/config");
 
@@ -24,6 +22,13 @@ app.use(express.json());
 
 // Request logging
 app.use(requestLogger);
+
+// ---------- Crash Test Route (for testing PM2 recovery) ---------- //
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 
 // ---------- Public Routes ---------- //
 app.post("/signup", createUser);
@@ -39,8 +44,8 @@ mongoose
     debug("Connected to MongoDB");
   })
   .catch((err) => {
-    console.error("MongoDB connection error:", err);
     debug("MongoDB connection error:", err);
+    process.exit(1); // Exit if database connection fails
   });
 
 // ---------- Error Handling Middleware ---------- //
@@ -50,12 +55,19 @@ app.use(errorLogger);
 // celebrate error handler
 app.use(errors());
 
-// our centralized handler
+// centralized error handler
 app.use(errorHandler);
 
 // ---------- Start Server ---------- //
-app.listen(PORT, () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   debug(`Server is running on port ${PORT}`);
+});
+
+server.on("error", (err) => {
+  debug("Server error:", err);
+  if (err.code === "EADDRINUSE") {
+    debug(`Port ${PORT} is already in use`);
+  }
 });
 
 module.exports = app;
