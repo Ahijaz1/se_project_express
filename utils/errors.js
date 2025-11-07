@@ -3,18 +3,30 @@ const UnauthorizedError = require("./errors/UnauthorizedError");
 const ForbiddenError = require("./errors/ForbiddenError");
 const NotFoundError = require("./errors/NotFoundError");
 const ConflictError = require("./errors/ConflictError");
+const {
+  BAD_REQUEST,
+  UNAUTHORIZED,
+  FORBIDDEN,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+  CONFLICT,
+  ERROR_MESSAGES,
+} = require("./constants");
 
-const ERROR_MESSAGES = {
-  BAD_REQUEST: { status: 400, message: "Bad Request" },
-  UNAUTHORIZED: { status: 401, message: "Incorrect email or password" },
-  FORBIDDEN: { status: 403, message: "You can only delete your own items." },
-  NOT_FOUND: { status: 404, message: "Not Found" },
-  INTERNAL_SERVER_ERROR: { status: 500, message: "Internal Server Error" },
-  CONFLICT: { status: 409, message: "Email already exists" },
+const ERROR_CODES = {
+  BAD_REQUEST: { status: BAD_REQUEST, message: ERROR_MESSAGES.BAD_REQUEST },
+  UNAUTHORIZED: { status: UNAUTHORIZED, message: ERROR_MESSAGES.UNAUTHORIZED },
+  FORBIDDEN: { status: FORBIDDEN, message: ERROR_MESSAGES.FORBIDDEN },
+  NOT_FOUND: { status: NOT_FOUND, message: ERROR_MESSAGES.NOT_FOUND },
+  INTERNAL_SERVER_ERROR: {
+    status: INTERNAL_SERVER_ERROR,
+    message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
+  },
+  CONFLICT: { status: CONFLICT, message: ERROR_MESSAGES.CONFLICT },
 };
 
 module.exports = {
-  ERROR_MESSAGES,
+  ERROR_CODES,
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,

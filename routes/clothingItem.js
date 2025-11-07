@@ -7,6 +7,10 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItem");
 const auth = require("../middlewares/auth");
+const {
+  validateCardBody,
+  validateClothingItemId,
+} = require("../middlewares/validation");
 
 const router = express.Router();
 
@@ -14,15 +18,15 @@ const router = express.Router();
 router.get("/", getItems);
 
 // POST new item (protected)
-router.post("/", auth, createItem);
+router.post("/", auth, validateCardBody, createItem);
 
 // DELETE an item by ID (protected)
-router.delete("/:itemId", auth, deleteItem);
+router.delete("/:itemId", auth, validateClothingItemId, deleteItem);
 
 // LIKE an item (protected)
-router.put("/:itemId/likes", auth, likeItem);
+router.put("/:itemId/likes", auth, validateClothingItemId, likeItem);
 
 // DISLIKE an item (protected)
-router.delete("/:itemId/likes", auth, dislikeItem);
+router.delete("/:itemId/likes", auth, validateClothingItemId, dislikeItem);
 
 module.exports = router;
