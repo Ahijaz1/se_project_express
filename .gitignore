@@ -30,3 +30,6 @@ coverage/
 
 # Output of 'npm pack'
 *.tgz
+
+# MongoDB data and logs (should not be version controlled)
+data/
